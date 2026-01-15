@@ -4,6 +4,12 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version />
+        <Title>TimetableDesigner.Backend.Events.Providers.RabbitMQ</Title>
+        <Authors>Mateusz Skoczek</Authors>
+        <PackageProjectUrl>https://github.com/TimetableDesigner/TimetableDesigner.Backend.Events.Providers.RabbitMQ</PackageProjectUrl>
+        <PackageIcon>icon.png</PackageIcon>
+        <RepositoryUrl>https://github.com/TimetableDesigner/TimetableDesigner.Backend.Events.Providers.RabbitMQ</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
