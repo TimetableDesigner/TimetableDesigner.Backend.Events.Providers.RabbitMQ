@@ -23,7 +23,7 @@ public class RabbitMQEventQueue : EventQueue<RabbitMQEventQueue>
             
         ConnectionFactory factory = new ConnectionFactory
         {
-            HostName = port,
+            HostName = hostname,
             Port = int.Parse(port),
             UserName = username,
             Password = password,
