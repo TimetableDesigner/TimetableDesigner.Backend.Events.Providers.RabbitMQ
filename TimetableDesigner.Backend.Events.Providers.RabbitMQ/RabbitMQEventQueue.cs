@@ -5,8 +5,8 @@ namespace TimetableDesigner.Backend.Events.Providers.RabbitMQ;
 
 public class RabbitMQEventQueue : EventQueue
 {
-    public string Hostname { get; set; } = null!;
-    public int Port { get; set; }
+    public string Hostname { get; set; } = "localhost";
+    public int Port { get; set; } = 5672;
     public string Username { get; set; } = null!;
     public string Password { get; set; } = null!;
     public string ExchangeName { get; set; } = null!;
