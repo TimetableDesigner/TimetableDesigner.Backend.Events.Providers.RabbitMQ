@@ -3,29 +3,36 @@ using RabbitMQ.Client;
 
 namespace TimetableDesigner.Backend.Events.Providers.RabbitMQ;
 
-public class RabbitMQEventQueue : EventQueue
+public class RabbitMQEventQueue : EventQueue<RabbitMQEventQueue>
 {
-    public string Hostname { get; set; } = "localhost";
-    public int Port { get; set; } = 5672;
-    public string Username { get; set; } = null!;
-    public string Password { get; set; } = null!;
-    public string ExchangeName { get; set; } = null!;
-    public string QueuePrefix { get; set; } = null!;
 
-    public override void Setup(IServiceCollection services)
+    protected override void Setup(IServiceCollection services, IDictionary<string, string> connectionParameters)
     {
+        if (!connectionParameters.TryGetValue("Hostname", out string hostname))
+        {
+            hostname = "localhost";
+        }
+        if (!connectionParameters.TryGetValue("Port", out string port))
+        {
+            port = "5672";
+        }
+        string username = connectionParameters["Username"];
+        string password = connectionParameters["Password"];
+        string exchangeName = connectionParameters["ExchangeName"];
+        string queuePrefix = connectionParameters["QueuePrefix"];
+            
         ConnectionFactory factory = new ConnectionFactory
         {
-            HostName = Hostname,
-            Port = Port,
-            UserName = Username,
-            Password = Password,
+            HostName = port,
+            Port = int.Parse(port),
+            UserName = username,
+            Password = password,
         };
-
+        
         Task<IConnection> createConnectionTask = factory.CreateConnectionAsync();
         createConnectionTask.Wait();
         services.AddSingleton(createConnectionTask.Result);
-        services.AddSingleton<IEventQueuePublisher, RabbitMQEventQueuePublisher>(sp => new RabbitMQEventQueuePublisher(sp.GetRequiredService<IConnection>(), ExchangeName));
-        services.AddSingleton<IEventQueueSubscriber, RabbitMQEventQueueSubscriber>(sp => new RabbitMQEventQueueSubscriber(sp.GetRequiredService<IConnection>(), ExchangeName, QueuePrefix));
+        services.AddSingleton<IEventQueuePublisher, RabbitMQEventQueuePublisher>(sp => new RabbitMQEventQueuePublisher(sp.GetRequiredService<IConnection>(), exchangeName));
+        services.AddSingleton<IEventQueueSubscriber, RabbitMQEventQueueSubscriber>(sp => new RabbitMQEventQueueSubscriber(sp.GetRequiredService<IConnection>(), exchangeName, queuePrefix));
     }
 }
