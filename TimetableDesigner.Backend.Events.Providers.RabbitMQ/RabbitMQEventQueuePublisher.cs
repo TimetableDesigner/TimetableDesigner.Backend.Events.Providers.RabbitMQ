@@ -13,22 +13,20 @@ public class RabbitMQEventQueuePublisher : IEventQueuePublisher
         _connection = connection;
         _exchangeName = exchangeName;
     }
-    
-    public async Task PublishAsync<T>(T eventData) where T : class
+
+    public async Task PublishAsync(string data, Type dataType)
     {
-        string routingKey = typeof(T).FullName!;
         BasicProperties properties = new BasicProperties
         {
             ContentType = "application/json",
             DeliveryMode = DeliveryModes.Persistent,
-            Type = typeof(T).FullName,
-            
+            Type = dataType.FullName,
         };
-        ReadOnlyMemory<byte> body = JsonSerializer.SerializeToUtf8Bytes(eventData);
+        ReadOnlyMemory<byte> body = JsonSerializer.SerializeToUtf8Bytes(data);
         await using (IChannel channel = await _connection.CreateChannelAsync())
         {
             await channel.ExchangeDeclareAsync(_exchangeName, ExchangeType.Direct);
-            await channel.BasicPublishAsync(_exchangeName, routingKey, true, properties, body);
+            await channel.BasicPublishAsync(_exchangeName, dataType.FullName!, true, properties, body);
         }
     }
 }
